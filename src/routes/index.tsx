@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useState } from "react";
 import { format } from "date-fns";
@@ -193,6 +193,12 @@ function Index() {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <Link
+              to="/attendance"
+              className="rounded-full bg-white/50 px-4 py-2 text-sm font-medium shadow-sm ring-1 ring-white/60 backdrop-blur-xl"
+            >
+              Attendance
+            </Link>
             <div className="hidden items-center gap-2 rounded-full bg-white/50 px-4 py-2 shadow-sm ring-1 ring-white/60 backdrop-blur-xl sm:flex">
               <span className="size-2 rounded-full bg-free" />
               <span className="text-sm font-medium text-slate-600">{freeCount} rooms free</span>
