@@ -38,7 +38,7 @@ const TONE: Record<string, string> = {
 const LABEL: Record<string, string> = { safe: "Safe", warn: "At risk", danger: "Short" };
 
 function Attendance() {
-  const [ttId, setTtId] = useState(TIMETABLES[0].id);
+  const [ttId, setTtId] = useState(TIMETABLES[0]!.id);
   const [target, setTarget] = useState(75);
   const [data, setData] = useState<Data>({});
   const [ready, setReady] = useState(false);
@@ -61,7 +61,7 @@ function Attendance() {
     if (ready) localStorage.setItem("attendly", JSON.stringify({ data, ttId, target }));
   }, [data, ttId, target, ready]);
 
-  const tt = TIMETABLES.find((t) => t.id === ttId) ?? TIMETABLES[0];
+  const tt = (TIMETABLES.find((t) => t.id === ttId) ?? TIMETABLES[0])!;
   const subjects = useMemo(() => subjectsOf(tt), [tt]);
   const rec = (c: string) => data[tt.id]?.[c] ?? EMPTY;
   const setRec = (c: string, r: Rec) =>
@@ -69,7 +69,7 @@ function Attendance() {
 
   const markDay = (present: boolean, od = false) => {
     const c: Record<string, number> = {};
-    tt.grid[day].forEach((x) => x && (c[x] = (c[x] ?? 0) + 1));
+    (tt.grid[day] ?? []).forEach((x) => x && (c[x] = (c[x] ?? 0) + 1));
     setData((d) => {
       const cur = { ...(d[tt.id] ?? {}) };
       for (const [code, n] of Object.entries(c)) {
@@ -131,7 +131,7 @@ function Attendance() {
             ))}
           </div>
           <div className="mt-4 flex flex-wrap gap-2">
-            {tt.grid[day].map((c, i) => c ? (
+            {(tt.grid[day] ?? []).map((c, i) => c ? (
               <span key={i} className="rounded-lg bg-background px-3 py-1 text-xs ring-1 ring-border">{tt.times[i]} · {tt.subjects[c] ?? c}</span>
             ) : null)}
           </div>
