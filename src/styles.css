@@ -190,3 +190,19 @@
 @utility blob-c {
   animation: drift 26s ease-in-out infinite;
 }
+
+/* Dark mode overrides for the glass UI */
+.dark { --ink: oklch(0.96 0.01 260); }
+.dark .from-indigo-100 { --tw-gradient-from: oklch(0.18 0.05 275); }
+.dark .via-sky-50 { --tw-gradient-via: oklch(0.14 0.04 250); --tw-gradient-via-stops: var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-via) var(--tw-gradient-via-position), var(--tw-gradient-to) var(--tw-gradient-to-position); }
+.dark .to-cyan-100 { --tw-gradient-to: oklch(0.17 0.04 220); }
+.dark .bg-white\/40 { background-color: oklch(0.25 0.03 265 / 0.45); }
+.dark .bg-white\/50 { background-color: oklch(0.25 0.03 265 / 0.55); }
+.dark .bg-white\/60 { background-color: oklch(0.28 0.03 265 / 0.6); }
+.dark .bg-white\/70 { background-color: oklch(0.28 0.03 265 / 0.7); }
+.dark .ring-white\/60, .dark .ring-white\/70 { --tw-ring-color: oklch(1 0 0 / 0.08); }
+.dark .border-white\/60 { border-color: oklch(1 0 0 / 0.1); }
+.dark .text-slate-400, .dark .text-slate-500 { color: oklch(0.72 0.03 260); }
+.dark .text-slate-600, .dark .text-slate-700 { color: oklch(0.85 0.02 260); }
+.dark .placeholder-slate-400::placeholder { color: oklch(0.6 0.03 260); }
+.dark .bg-fuchsia-200\/40 { background-color: oklch(0.4 0.15 330 / 0.25); }
