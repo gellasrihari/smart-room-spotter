@@ -1,6 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
+import { format, addWeeks, differenceInCalendarWeeks } from "date-fns";
+import { CalendarIcon } from "lucide-react";
 import { ATT_DAYS, TIMETABLES, type Timetable } from "@/data/timetables";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 export const Route = createFileRoute("/attendance")({
   head: () => ({
