@@ -37,7 +37,7 @@ export const Route = createFileRoute("/")({
 });
 
 const EXAMPLES = [
-  "AC room on the ground floor for 2 hours",
+  "AC lab on the first floor for me and my team for 2 hours",
   "Projector room for 20 people",
   "Quiet AC room for me and my team",
 ];
@@ -184,7 +184,7 @@ function Index() {
             <span className="text-xl text-brand">⌕</span>
             <input
               className="min-w-0 flex-1 bg-transparent text-base text-slate-700 placeholder-slate-400 outline-none"
-              placeholder="e.g. AC room on the ground floor for 2 hours"
+              placeholder="e.g. AC lab on the first floor for me and my team for 2 hours"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
             />
