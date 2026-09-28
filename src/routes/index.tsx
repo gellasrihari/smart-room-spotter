@@ -299,7 +299,7 @@ function Index() {
           <Popover>
             <PopoverTrigger asChild>
               <button className="rounded-xl bg-white/70 px-4 py-2 text-sm font-medium text-slate-700 ring-1 ring-white/70">
-                📅 {whenLabel}
+                {whenLabel}
               </button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
