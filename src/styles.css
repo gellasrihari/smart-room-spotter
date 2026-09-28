@@ -160,3 +160,33 @@
     color: var(--color-foreground);
   }
 }
+
+@layer base {
+  body {
+    font-family: var(--font-body);
+  }
+}
+
+@keyframes drift {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(40px, -30px) scale(1.1); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+
+@keyframes drift2 {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-50px, 40px) scale(1.15); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+
+@utility blob-a {
+  animation: drift 18s ease-in-out infinite;
+}
+
+@utility blob-b {
+  animation: drift2 22s ease-in-out infinite;
+}
+
+@utility blob-c {
+  animation: drift 26s ease-in-out infinite;
+}
