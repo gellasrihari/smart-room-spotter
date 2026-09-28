@@ -1,7 +1,9 @@
 import { DAY_KEYS, ROOMS, type DayKey, type Room, type Slot } from "@/data/rooms";
 
 export function toMinutes(hhmm: string): number {
-  const [h, m] = hhmm.split(":").map(Number);
+  const parts = hhmm.split(":");
+  const h = Number(parts[0] ?? 0);
+  const m = Number(parts[1] ?? 0);
   return h * 60 + m;
 }
 
@@ -12,7 +14,7 @@ export function fromMinutes(mins: number): string {
 }
 
 export function dayKeyOf(date: Date): DayKey {
-  return DAY_KEYS[date.getDay()];
+  return DAY_KEYS[date.getDay()] ?? "Mon";
 }
 
 export type RoomStatus = {
