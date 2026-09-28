@@ -1,6 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
+import { format, addWeeks, differenceInCalendarWeeks } from "date-fns";
+import { CalendarIcon } from "lucide-react";
 import { ATT_DAYS, TIMETABLES, type Timetable } from "@/data/timetables";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 export const Route = createFileRoute("/attendance")({
   head: () => ({
@@ -42,7 +46,8 @@ function Attendance() {
   const [target, setTarget] = useState(75);
   const [data, setData] = useState<Data>({});
   const [ready, setReady] = useState(false);
-  const [day, setDay] = useState(0);
+  const [markDate, setMarkDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
 
   useEffect(() => {
     try {
@@ -50,16 +55,21 @@ function Attendance() {
       if (s.data) setData(s.data);
       if (s.ttId) setTtId(s.ttId);
       if (s.target) setTarget(s.target);
+      if (s.endDate) setEndDate(new Date(s.endDate));
     } catch {}
     const theme = localStorage.getItem("roomly-theme");
     document.documentElement.classList.toggle("dark", theme ? theme === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches);
-    const d = new Date().getDay();
-    setDay(d >= 1 && d <= 5 ? d - 1 : 0);
+    setMarkDate(new Date());
     setReady(true);
   }, []);
   useEffect(() => {
-    if (ready) localStorage.setItem("attendly", JSON.stringify({ data, ttId, target }));
-  }, [data, ttId, target, ready]);
+    if (ready) localStorage.setItem("attendly", JSON.stringify({ data, ttId, target, endDate: endDate?.toISOString() }));
+  }, [data, ttId, target, endDate, ready]);
+
+  const end = endDate ?? addWeeks(new Date(), 15);
+  const weeksLeft = Math.max(0, differenceInCalendarWeeks(end, new Date()));
+  const wd = markDate ? markDate.getDay() : 1;
+  const day = wd >= 1 && wd <= 5 ? wd - 1 : -1;
 
   const tt = (TIMETABLES.find((t) => t.id === ttId) ?? TIMETABLES[0])!;
   const subjects = useMemo(() => subjectsOf(tt), [tt]);
