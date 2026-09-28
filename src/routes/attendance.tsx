@@ -134,22 +134,53 @@ function Attendance() {
         </section>
 
         <section className="mt-6 rounded-3xl bg-card/60 p-6 ring-1 ring-border backdrop-blur-2xl">
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center gap-3">
             <p className="mr-2 font-display font-semibold">Quick mark a day</p>
-            {ATT_DAYS.map((d, i) => (
-              <button key={d} onClick={() => setDay(i)} className={`rounded-full px-3 py-1 text-sm ring-1 ring-border ${i === day ? "bg-brand text-primary-foreground" : "bg-background"}`}>{d}</button>
-            ))}
+            <Popover>
+              <PopoverTrigger asChild>
+                <button className="flex items-center gap-2 rounded-full bg-background px-4 py-1.5 text-sm ring-1 ring-border">
+                  <CalendarIcon className="size-4" />
+                  {markDate ? format(markDate, "EEE, d MMM yyyy") : "Pick a date"}
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar mode="single" selected={markDate ?? undefined} onSelect={(d) => d && setMarkDate(d)} initialFocus className="pointer-events-auto p-3" />
+              </PopoverContent>
+            </Popover>
+            {day >= 0 && <span className="rounded-full bg-brand/10 px-3 py-1 text-sm text-brand">{ATT_DAYS[day]} schedule</span>}
           </div>
-          <div className="mt-4 flex flex-wrap gap-2">
-            {(tt.grid[day] ?? []).map((c, i) => c ? (
-              <span key={i} className="rounded-lg bg-background px-3 py-1 text-xs ring-1 ring-border">{tt.times[i]} · {tt.subjects[c] ?? c}</span>
-            ) : null)}
-          </div>
-          <div className="mt-4 flex flex-wrap gap-2">
-            <button onClick={() => markDay(true)} className="rounded-lg bg-free px-4 py-2 text-sm font-medium text-primary-foreground">Present all</button>
-            <button onClick={() => markDay(false)} className="rounded-lg bg-destructive px-4 py-2 text-sm font-medium text-primary-foreground">Absent all</button>
-            <button onClick={() => markDay(false, true)} className="rounded-lg bg-accent2 px-4 py-2 text-sm font-medium text-primary-foreground">On duty</button>
-          </div>
+          {day < 0 ? (
+            <p className="mt-4 text-sm text-muted-foreground">That's a weekend — no classes to mark.</p>
+          ) : (
+            <>
+              <div className="mt-4 flex flex-wrap gap-2">
+                {(tt.grid[day] ?? []).map((c, i) => c ? (
+                  <span key={i} className="rounded-lg bg-background px-3 py-1 text-xs ring-1 ring-border">{tt.times[i]} · {tt.subjects[c] ?? c}</span>
+                ) : null)}
+              </div>
+              <div className="mt-4 flex flex-wrap gap-2">
+                <button onClick={() => markDay(true)} className="rounded-lg bg-free px-4 py-2 text-sm font-medium text-primary-foreground">Present all</button>
+                <button onClick={() => markDay(false)} className="rounded-lg bg-destructive px-4 py-2 text-sm font-medium text-primary-foreground">Absent all</button>
+                <button onClick={() => markDay(false, true)} className="rounded-lg bg-accent2 px-4 py-2 text-sm font-medium text-primary-foreground">On duty</button>
+              </div>
+            </>
+          )}
+        </section>
+
+        <section className="mt-6 flex flex-wrap items-center gap-3 rounded-3xl bg-card/60 p-6 ring-1 ring-border backdrop-blur-2xl">
+          <p className="font-display font-semibold">Semester ends</p>
+          <Popover>
+            <PopoverTrigger asChild>
+              <button className="flex items-center gap-2 rounded-full bg-background px-4 py-1.5 text-sm ring-1 ring-border">
+                <CalendarIcon className="size-4" />
+                {format(end, "d MMM yyyy")}
+              </button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar mode="single" selected={end} onSelect={(d) => d && setEndDate(d)} initialFocus className="pointer-events-auto p-3" />
+            </PopoverContent>
+          </Popover>
+          <p className="text-sm text-muted-foreground">≈ {weeksLeft} week{weeksLeft === 1 ? "" : "s"} of classes left</p>
         </section>
 
         <section className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
