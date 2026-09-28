@@ -1,6 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useState } from "react";
+import { format } from "date-fns";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 import { FLOOR_NAMES, ROOMS, type DayKey, type Room } from "@/data/rooms";
 import {
@@ -107,6 +110,23 @@ function Index() {
   const [error, setError] = useState<string | null>(null);
 
   const ask = useServerFn(parseRoomRequest);
+  const [picked, setPicked] = useState<Date | null>(null);
+  const [pickedTime, setPickedTime] = useState("10:00");
+  const [dark, setDark] = useState(false);
+
+  useEffect(() => {
+    const saved = localStorage.getItem("roomly-theme");
+    const isDark = saved ? saved === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+    setDark(isDark);
+  }, []);
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", dark);
+  }, [dark]);
+  function toggleDark() {
+    const next = !dark;
+    setDark(next);
+    localStorage.setItem("roomly-theme", next ? "dark" : "light");
+  }
 
   useEffect(() => {
     setNow(new Date());
@@ -114,8 +134,19 @@ function Index() {
     return () => clearInterval(t);
   }, []);
 
-  const day: DayKey = now ? dayKeyOf(now) : "Mon";
-  const minutes = now ? now.getHours() * 60 + now.getMinutes() : 9 * 60;
+  const live = picked === null;
+  const day: DayKey = picked ? dayKeyOf(picked) : now ? dayKeyOf(now) : "Mon";
+  const minutes = picked
+    ? toMinutes(pickedTime)
+    : now
+      ? now.getHours() * 60 + now.getMinutes()
+      : 9 * 60;
+  const weekend = day === "Sat" || day === "Sun";
+  const whenLabel = picked
+    ? `${format(picked, "EEE, d MMM yyyy")} · ${pickedTime}`
+    : now
+      ? `Now · ${format(now, "EEE, d MMM")} ${fromMinutes(minutes)}`
+      : "Checking…";
 
   const floors = useMemo(() => groupByFloor(allStatuses(day, minutes)), [day, minutes]);
   const freeCount = useMemo(
@@ -161,11 +192,18 @@ function Index() {
               <p className="text-xs text-slate-500">Campus space finder</p>
             </div>
           </div>
-          <div className="flex items-center gap-2 rounded-full bg-white/50 px-4 py-2 shadow-sm ring-1 ring-white/60 backdrop-blur-xl">
-            <span className="size-2 rounded-full bg-free" />
-            <span className="text-sm font-medium text-slate-600">
-              {now ? `${freeCount} rooms free · ${day} ${fromMinutes(minutes)}` : "Checking…"}
-            </span>
+          <div className="flex items-center gap-2">
+            <div className="hidden items-center gap-2 rounded-full bg-white/50 px-4 py-2 shadow-sm ring-1 ring-white/60 backdrop-blur-xl sm:flex">
+              <span className="size-2 rounded-full bg-free" />
+              <span className="text-sm font-medium text-slate-600">{freeCount} rooms free</span>
+            </div>
+            <button
+              onClick={toggleDark}
+              aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
+              className="grid size-10 place-items-center rounded-full bg-white/50 text-lg shadow-sm ring-1 ring-white/60 backdrop-blur-xl"
+            >
+              {dark ? "☀" : "☾"}
+            </button>
           </div>
         </header>
 
@@ -256,9 +294,57 @@ function Index() {
           )}
         </section>
 
-        <section className="mt-10">
+        <section className="mt-10 flex flex-wrap items-center gap-3 rounded-3xl bg-white/40 p-4 ring-1 ring-white/60 backdrop-blur-xl">
+          <span className="text-sm font-semibold text-slate-600">Check for:</span>
+          <Popover>
+            <PopoverTrigger asChild>
+              <button className="rounded-xl bg-white/70 px-4 py-2 text-sm font-medium text-slate-700 ring-1 ring-white/70">
+                {whenLabel}
+              </button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="single"
+                selected={picked ?? now ?? undefined}
+                onSelect={(d) => d && setPicked(d)}
+                className="pointer-events-auto p-3"
+              />
+            </PopoverContent>
+          </Popover>
+          <label className="flex items-center gap-2 text-sm text-slate-600">
+            Time
+            <input
+              type="time"
+              min="08:00"
+              max="18:00"
+              value={live ? fromMinutes(minutes) : pickedTime}
+              onChange={(e) => {
+                setPickedTime(e.target.value);
+                if (!picked) setPicked(now ?? new Date());
+              }}
+              className="rounded-xl bg-white/70 px-3 py-2 text-slate-700 ring-1 ring-white/70 outline-none"
+            />
+          </label>
+          {!live && (
+            <button
+              onClick={() => setPicked(null)}
+              className="rounded-xl bg-brand px-4 py-2 text-sm font-semibold text-white"
+            >
+              Back to now
+            </button>
+          )}
+          {weekend && (
+            <span className="text-sm font-medium text-slate-500">
+              No classes on weekends — every room is free.
+            </span>
+          )}
+        </section>
+
+        <section className="mt-6">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="font-display text-xl font-bold">Live availability</h2>
+            <h2 className="font-display text-xl font-bold">
+              {live ? "Live availability" : "Availability on selected date"}
+            </h2>
             <div className="flex items-center gap-4 text-xs text-slate-500">
               <span className="flex items-center gap-1.5">
                 <Dot tone="free" />
